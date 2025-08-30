@@ -1,0 +1,91 @@
+openapi: 3.0.3
+info:
+  title: Afe Card API
+  version: 1.0.0
+  description: |
+    API for securely storing and searching card numbers.
+    - PAN is encrypted at rest using AES GCM.
+    - Full PAN is never returned or logged.
+    - Search supports exact match and last 4 digits.
+servers:
+  - url: http://localhost:8080/api
+
+paths:
+  /card:
+    post:
+      summary: Create a new card
+      description: |
+        Accepts cardholder name and PAN. PAN is validated and encrypted at rest.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardRequest'
+      responses:
+        '201':
+          description: Card created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Invalid input (e.g. Luhn/length check)
+        '500':
+          description: Server error
+
+  /card/search:
+    get:
+      summary: Search for cards
+      description: |
+        Search cards by full PAN (exact match) or last 4 digits. Returns masked PAN.
+      parameters:
+        - name: pan
+          in: query
+          description: Full PAN for exact search or last 4 digits
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of matching cards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Invalid query parameters
+        '500':
+          description: Server error
+
+components:
+  schemas:
+    CardRequest:
+      type: object
+      required:
+        - cardholderName
+        - pan
+      properties:
+        cardholderName:
+          type: string
+          example: John Doe
+        pan:
+          type: string
+          example: '4111111111111111'
+          description: Must pass Luhn check and be 12-19 digits
+    CardResponse:
+      type: object
+      properties:
+        cardholderName:
+          type: string
+          example: John Doe
+        maskedPan:
+          type: string
+          example: '4111 11** **** 1111'
+          description: Only masked PAN is returned
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-08-30T10:15:30Z'
