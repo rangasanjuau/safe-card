@@ -87,7 +87,7 @@ components:
           type: string
           example: '4111 11** **** 1111'
           description: Only masked PAN is returned
-        createdAt:
+        creationTime:
           type: string
           format: date-time
           example: '2025-08-30T10:15:30Z'
