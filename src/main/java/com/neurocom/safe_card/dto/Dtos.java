@@ -10,6 +10,6 @@ public class Dtos {
     }
 
     // Response Object
-    public record CardView(UUID id, String cardholderName, String maskedPan, Instant creationTime) {
+    public record CardResponse(UUID id, String cardholderName, String maskedPan, Instant creationTime) {
     }
 }
