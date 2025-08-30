@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: Afe Card API
+  title: SAFE Card API
   version: 1.0.0
   description: |
     API for securely storing and searching card numbers.
@@ -57,6 +57,8 @@ paths:
                   $ref: '#/components/schemas/CardResponse'
         '400':
           description: Invalid query parameters
+        '404':
+          description: Card not found
         '500':
           description: Server error
 
