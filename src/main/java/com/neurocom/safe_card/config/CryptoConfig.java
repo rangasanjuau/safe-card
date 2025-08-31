@@ -12,8 +12,20 @@ import org.springframework.context.annotation.Configuration;
 public class CryptoConfig {
     private String aesKeyBase64; // 32 bytes (AES-256)
     private String hmacKeyBase64; // HMAC-SHA-256 key
-    public String getAesKeyBase64() { return aesKeyBase64; }
-    public void setAesKeyBase64(String v) { this.aesKeyBase64 = v; }
-    public String getHmacKeyBase64() { return hmacKeyBase64; }
-    public void setHmacKeyBase64(String v) { this.hmacKeyBase64 = v; }
+
+    public String getAesKeyBase64() {
+        return aesKeyBase64;
+    }
+
+    public void setAesKeyBase64(String v) {
+        this.aesKeyBase64 = v;
+    }
+
+    public String getHmacKeyBase64() {
+        return hmacKeyBase64;
+    }
+
+    public void setHmacKeyBase64(String v) {
+        this.hmacKeyBase64 = v;
+    }
 }

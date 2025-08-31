@@ -35,7 +35,7 @@ class CardServiceImplTest {
     }
 
     @Test
-    void testCreate_validPan_savesAndReturnsResponse() throws Exception {
+    void testCreate_validPan_savesAndReturnsResponse() {
         String name = "Alice";
         String pan = "4556737586899855"; // Luhn valid
 
@@ -44,9 +44,9 @@ class CardServiceImplTest {
 
         byte[] iv = "iv-bytes-123456".getBytes(StandardCharsets.UTF_8);
         byte[] ciphertext = "cipher".getBytes(StandardCharsets.UTF_8);
-        EncryptionService.CipherRecord record = new EncryptionService.CipherRecord(iv, ciphertext);
+        EncryptionService.CipherRecord cipherRecord = new EncryptionService.CipherRecord(iv, ciphertext);
 
-        when(encryptionService.encrypt(plaintext)).thenReturn(record);
+        when(encryptionService.encrypt(plaintext)).thenReturn(cipherRecord);
         when(hmacService.getHmacHex(pan)).thenReturn("hmac-value");
         String idx = hmacService.getHmacHex("9855");
         Card saved = new Card();
@@ -107,7 +107,7 @@ class CardServiceImplTest {
     }
 
     @Test
-    void testSearchByLast4Digits_decryptsAndReturnsResults() throws Exception {
+    void testSearchByLast4Digits_decryptsAndReturnsResults() {
         String pan = "4556737586899855";
         byte[] iv = "iv".getBytes(StandardCharsets.UTF_8);
         byte[] ct = "ct".getBytes(StandardCharsets.UTF_8);

@@ -45,7 +45,7 @@ class AesGcmServiceImplTest {
     }
 
     @Test
-    void testEncryptDecrypt() throws Exception {
+    void testEncryptDecrypt() {
         byte[] plaintext = TEST_PLAIN_TEXT.getBytes();
 
         // Encrypt
@@ -59,7 +59,7 @@ class AesGcmServiceImplTest {
     }
 
     @Test
-    void testEncryptProducesDifferentCiphertexts() throws Exception {
+    void testEncryptProducesDifferentCiphertexts() {
         byte[] plaintext = TEST_PLAIN_TEXT.getBytes();
 
         EncryptionService.CipherRecord record1 = aesService.encrypt(plaintext);

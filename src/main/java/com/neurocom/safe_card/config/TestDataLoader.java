@@ -23,7 +23,6 @@ public class TestDataLoader implements ApplicationRunner {
         cardService.create("Bob", "4716108999716531");
         cardService.create("Diana", "5425233430109903");
         cardService.create("Charlie", "6011000990139424");
-        System.out.println("✅ Test cards created at startup");
     }
 }
 

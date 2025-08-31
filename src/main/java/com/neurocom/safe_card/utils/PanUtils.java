@@ -32,7 +32,8 @@ public class PanUtils {
      * @return True if the PAN is valid according to Luhn, false otherwise.
      */
     public static boolean isLuhnValid(String pan) {
-        int sum = 0; boolean alt = false;
+        int sum = 0;
+        boolean alt = false;
         for (int i = pan.length()-1; i >= 0; i--) {
             int n = pan.charAt(i) - '0';
             if (alt) { n *= 2; if (n > 9) n -= 9; }

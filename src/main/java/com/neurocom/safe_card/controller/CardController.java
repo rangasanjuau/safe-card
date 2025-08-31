@@ -22,10 +22,9 @@ public class CardController {
         this.cardService = cardService;
     }
 
-
     @PostMapping
     public ResponseEntity<Dtos.CardResponse> create(@RequestBody @Valid Dtos.CardRequest
-                                                            req) throws Exception {
+                                                            req) {
 
         Dtos.CardResponse cardResponse = cardService.create(req.cardholderName(), req.pan());
 
