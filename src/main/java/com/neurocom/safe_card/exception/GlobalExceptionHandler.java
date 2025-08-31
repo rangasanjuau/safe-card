@@ -47,6 +47,23 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+
+    /**
+     * Handles NotFoundException and returns a structured error response.
+     *
+     * @param ex the NotFoundException instance
+     * @return ResponseEntity with error details and HTTP status 404
+     */
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleNotFound(NotFoundException ex) {
+        var error = new ErrorResponse(
+                "PAN Not Found",
+                ex.getMessage(),
+                Instant.now()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
     /**
      * Handles EncryptionException and returns a structured error response.
      *

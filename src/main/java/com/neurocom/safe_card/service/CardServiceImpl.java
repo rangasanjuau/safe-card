@@ -4,6 +4,7 @@ import com.neurocom.safe_card.dto.Dtos;
 import com.neurocom.safe_card.entity.Card;
 import com.neurocom.safe_card.exception.EncryptionException;
 import com.neurocom.safe_card.exception.InvalidPanException;
+import com.neurocom.safe_card.exception.NotFoundException;
 import com.neurocom.safe_card.repository.CardRepository;
 import com.neurocom.safe_card.utils.EncryptionService;
 import com.neurocom.safe_card.utils.HmacService;
@@ -84,10 +85,15 @@ public class CardServiceImpl implements CardService{
                 InvalidPanException("INVALID PAN : " + rawPan );
 
         String idx = hmacService.getHmacHex(pan);
-        return repo.findByPanHmac(idx).stream()
+        List<Dtos.CardResponse> response =  repo.findByPanHmac(idx).stream()
                 .map(c -> new Dtos.CardResponse(c.getId(), c.getCardholderName(),
                         PanUtils.maskPan(pan), c.getCreatedAt()))
                 .toList();
+
+        if(response.isEmpty() ) {
+            throw new NotFoundException("No cards found for PAN: " + PanUtils.maskPan(pan));
+        }
+        return response;
     }
 
     /**

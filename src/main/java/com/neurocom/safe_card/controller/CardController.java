@@ -2,7 +2,6 @@ package com.neurocom.safe_card.controller;
 
 
 import com.neurocom.safe_card.dto.Dtos;
-import com.neurocom.safe_card.exception.InvalidPanException;
 import com.neurocom.safe_card.exception.InvalidRequestException;
 import com.neurocom.safe_card.service.CardService;
 import jakarta.validation.Valid;
@@ -14,6 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/cards")
+@CrossOrigin(origins = "*") // allow all origins for testing
 public class CardController {
 
 
