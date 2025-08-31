@@ -11,7 +11,7 @@ servers:
   - url: http://localhost:8080/api
 
 paths:
-  /card:
+  /cards:
     post:
       summary: Create a new card
       description: |
@@ -31,10 +31,18 @@ paths:
                 $ref: '#/components/schemas/CardResponse'
         '400':
           description: Invalid input (e.g. Luhn/length check)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
-  /card/search:
+  /cards/search:
     get:
       summary: Search for cards
       description: |
@@ -42,8 +50,14 @@ paths:
       parameters:
         - name: pan
           in: query
-          description: Full PAN for exact search or last 4 digits
-          required: true
+          description: Full PAN for exact match (optional)
+          required: false
+          schema:
+            type: string
+        - name: last4
+          in: query
+          description: Last 4 digits of PAN (optional)
+          required: false
           schema:
             type: string
       responses:
@@ -57,13 +71,39 @@ paths:
                   $ref: '#/components/schemas/CardResponse'
         '400':
           description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '500':
           description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
 
 components:
   schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Invalid PAN
+        message:
+          type: string
+          example: 'INVALID PAN : 4716 ABCD'
+          description: Must pass Luhn check and be 12-19 digits
+        timestamp:
+          type: string
+          example: 2025-08-31T16:33:35.362672Z
+          description: Must pass Luhn check and be 12-19 digits
     CardRequest:
       type: object
       required:
