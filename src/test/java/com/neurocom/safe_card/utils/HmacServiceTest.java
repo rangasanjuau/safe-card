@@ -1,7 +1,6 @@
-package com.neurocom.safe_card.util;
+package com.neurocom.safe_card.utils;
 
 import com.neurocom.safe_card.config.CryptoConfig;
-import com.neurocom.safe_card.utils.HmacServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
