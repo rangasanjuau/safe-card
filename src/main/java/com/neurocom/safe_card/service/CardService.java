@@ -24,10 +24,19 @@ public class CardService {
 
     //TODO: 7. Implement search card method
     @Transactional(readOnly = true)
-    public List<Dtos.CardResponse> searchPan(String rawPan) {
-
+    public List<Dtos.CardResponse> searchByPan(String rawPan) {
+        // TODO: Validate luhn and length (Utility)
         // TODO: 8. Calculate HMAC (Utility)
         // TODO: 9. Query DB by HMAC (Repository)
+        return Collections.emptyList();
+    }
+
+    //TODO: 10. Implement search card by last 4 digits method
+    @Transactional(readOnly = true)
+    public List<Dtos.CardResponse> searchByLast4Digits(String rawPan) {
+        // TODO: Validate luhn and length (Utility)
+        // TODO: 11. Calculate HMAC (Utility)
+        // TODO: 12. Query DB by HMAC (Repository)
         return Collections.emptyList();
     }
 

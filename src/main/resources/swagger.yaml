@@ -42,8 +42,14 @@ paths:
       parameters:
         - name: pan
           in: query
-          description: Full PAN for exact search or last 4 digits
-          required: true
+          description: Full PAN for exact match (optional)
+          required: false
+          schema:
+            type: string
+        - name: last4
+          in: query
+          description: Last 4 digits of PAN (optional)
+          required: false
           schema:
             type: string
       responses:

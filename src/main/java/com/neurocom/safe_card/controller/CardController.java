@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -25,13 +26,19 @@ public class CardController {
     public ResponseEntity<Dtos.CardResponse> create(@RequestBody @Valid Dtos.CardRequest
                                                             req) throws Exception {
 
-        return ResponseEntity.ok(cardService.create(req.cardholderName(), req.pan()));
+        Dtos.CardResponse cardResponse = cardService.create(req.cardholderName(), req.pan());
+
+        return ResponseEntity
+                .created(URI.create("/api/cards/" + cardResponse.id())) // Location header
+                .body(cardResponse); // Response body
     }
 
     @GetMapping("/search")
     public ResponseEntity<List<Dtos.CardResponse>> search(@RequestParam(required = false)
-                                                          String pan) {
-        if (pan != null) return ResponseEntity.ok(cardService.searchPan(pan));
+                                                          String pan, @RequestParam(required = false)
+                                                          String last4Digits) {
+        if (pan != null) return ResponseEntity.ok(cardService.searchByPan(pan));
+        if (last4Digits != null) return ResponseEntity.ok(cardService.searchByLast4Digits(last4Digits));
 
         return ResponseEntity.badRequest().build();
     }
