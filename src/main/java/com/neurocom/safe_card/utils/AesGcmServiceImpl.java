@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.security.GeneralSecurityException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -34,10 +35,10 @@ public class AesGcmServiceImpl implements EncryptionService {
     /** Encrypts the given plaintext using AES-GCM.
      * @param plaintext The plaintext to encrypt.
      * @return A CipherRecord containing the IV and ciphertext.
-     * @throws Exception on encryption errors.
+     * @throws GeneralSecurityException on encryption errors.
      */
     @Override
-    public CipherRecord encrypt(byte[] plaintext) throws Exception {
+    public CipherRecord encrypt(byte[] plaintext) throws GeneralSecurityException {
         byte[] iv = new byte[12]; // 96-bit IV for GCM
         random.nextBytes(iv);
         Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");

@@ -2,8 +2,13 @@ package com.neurocom.safe_card.utils;
 
 public class PanUtils {
 
+
     public static final int KEEP_START = 6;
     public static final int KEEP_END = 4;
+
+    // add private constructor to prevent instantiation
+    private PanUtils() {}
+
 
     /** Normalizes a PAN by removing all whitespace characters.
      * @param pan The input PAN (may contain spaces).
@@ -34,6 +39,15 @@ public class PanUtils {
             sum += n; alt = !alt;
         }
         return sum % 10 == 0;
+    }
+
+    /** Validates a PAN by normalizing it, checking length, and applying Luhn check.
+     * @param pan The input PAN (may contain spaces).
+     * @return True if the PAN is valid, false otherwise.
+     */
+    public static boolean isPanValid(String pan) {
+        String normalized = normalize(pan);
+        return isLengthValid(normalized) && isLuhnValid(normalized);
     }
 
     /** Masks a normalized PAN for display, showing only the first 6 and last 4 digits.

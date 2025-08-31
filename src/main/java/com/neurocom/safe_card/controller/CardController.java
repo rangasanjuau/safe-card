@@ -2,6 +2,8 @@ package com.neurocom.safe_card.controller;
 
 
 import com.neurocom.safe_card.dto.Dtos;
+import com.neurocom.safe_card.exception.InvalidPanException;
+import com.neurocom.safe_card.exception.InvalidRequestException;
 import com.neurocom.safe_card.service.CardService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +42,7 @@ public class CardController {
         if (pan != null) return ResponseEntity.ok(cardService.searchByPan(pan));
         if (last4 != null) return ResponseEntity.ok(cardService.searchByLast4Digits(last4));
 
-        return ResponseEntity.badRequest().build();
+        throw new InvalidRequestException("Either 'pan' or 'last4' query parameter must be provided.");
     }
 
 }

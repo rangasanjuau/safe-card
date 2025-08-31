@@ -35,7 +35,7 @@ public class HmacServiceImpl implements HmacService {
      */
     @Override
     public String getHmacHex(String normalizedPan) {
-        //
+
         byte[] out = mac.doFinal(normalizedPan.getBytes(StandardCharsets.UTF_8));
         StringBuilder sb = new StringBuilder(out.length*2);
         for (byte b : out) sb.append(String.format("%02x", b));

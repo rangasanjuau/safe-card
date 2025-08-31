@@ -2,6 +2,7 @@ package com.neurocom.safe_card.service;
 
 import com.neurocom.safe_card.dto.Dtos;
 import com.neurocom.safe_card.entity.Card;
+import com.neurocom.safe_card.exception.InvalidPanException;
 import com.neurocom.safe_card.repository.CardRepository;
 import com.neurocom.safe_card.utils.EncryptionService;
 import com.neurocom.safe_card.utils.HmacService;
@@ -47,17 +48,17 @@ class CardServiceImplTest {
 
         when(encryptionService.encrypt(plaintext)).thenReturn(record);
         when(hmacService.getHmacHex(pan)).thenReturn("hmac-value");
-
+        String idx = hmacService.getHmacHex("9855");
         Card saved = new Card();
         saved.setId(RANDOM_UUID);
         saved.setCardholderName(name);
         saved.setIv(iv);
         saved.setPanCiphertext(ciphertext);
         saved.setPanHmac("hmac-value");
-        saved.setLast4Hmac("9855");
+        saved.setLast4Hmac(idx);
         saved.setCreatedAt(Instant.now());
 
-        when(repo.save(any(Card.class))).thenReturn(saved);
+        when(repo.saveAndFlush(any(Card.class))).thenReturn(saved);
 
         Dtos.CardResponse response = service.create(name, pan);
 
@@ -68,17 +69,17 @@ class CardServiceImplTest {
 
         // Verify repository save was called with correct Card
         ArgumentCaptor<Card> cardCaptor = ArgumentCaptor.forClass(Card.class);
-        verify(repo).save(cardCaptor.capture());
+        verify(repo).saveAndFlush(cardCaptor.capture());
         Card captured = cardCaptor.getValue();
         assertEquals("hmac-value", captured.getPanHmac());
-        assertEquals("9855", captured.getLast4Hmac());
+        assertEquals(idx, captured.getLast4Hmac());
     }
 
     @Test
     void testCreate_invalidPan_throwsException() {
         String badPan = "123456"; // too short
 
-        assertThrows(IllegalArgumentException.class, () ->
+        assertThrows(InvalidPanException.class, () ->
                 service.create("Bob", badPan));
         verifyNoInteractions(repo, encryptionService, hmacService);
     }
@@ -118,7 +119,9 @@ class CardServiceImplTest {
         card.setPanCiphertext(ct);
         card.setCreatedAt(Instant.now());
 
-        when(repo.findByLast4Hmac("9855")).thenReturn(List.of(card));
+        String idx = hmacService.getHmacHex("9855");
+
+        when(repo.findByLast4Hmac(idx)).thenReturn(List.of(card));
         when(encryptionService.decrypt(iv, ct)).thenReturn(pan.getBytes(StandardCharsets.UTF_8));
 
         List<Dtos.CardResponse> results = service.searchByLast4Digits("9855");

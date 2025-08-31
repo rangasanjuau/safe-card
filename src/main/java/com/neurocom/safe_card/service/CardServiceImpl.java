@@ -2,6 +2,8 @@ package com.neurocom.safe_card.service;
 
 import com.neurocom.safe_card.dto.Dtos;
 import com.neurocom.safe_card.entity.Card;
+import com.neurocom.safe_card.exception.EncryptionException;
+import com.neurocom.safe_card.exception.InvalidPanException;
 import com.neurocom.safe_card.repository.CardRepository;
 import com.neurocom.safe_card.utils.EncryptionService;
 import com.neurocom.safe_card.utils.HmacService;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 import java.util.List;
 
 
@@ -29,38 +32,43 @@ public class CardServiceImpl implements CardService{
         this.hmacService = hmac;
     }
 
-    /**
+ /**
      * Creates a new card record with encrypted PAN.
      * @param name The cardholder's name.
      * @param rawPan The raw PAN (may include spaces).
-     * @return The created CardResponse DTO.
-     * @throws Exception on encryption errors or invalid PAN.
+     * @return A CardResponse DTO with the created card details.
+     * @throws InvalidPanException If the PAN is invalid.
+     * @throws EncryptionException If encryption fails.
      */
     @Override
     @Transactional
-    public Dtos.CardResponse create(String name, String rawPan) throws Exception {
+    public Dtos.CardResponse create(String name, String rawPan) throws InvalidPanException, EncryptionException {
 
         String pan = PanUtils.normalize(rawPan);
-        if (!PanUtils.isLengthValid(pan) || !PanUtils.isLuhnValid(pan)) throw new
-                IllegalArgumentException("Invalid PAN");
+        if (!PanUtils.isPanValid(pan)) throw new
+                InvalidPanException("INVALID PAN : " + rawPan );
 
-        var pack = encryptionService.encrypt(pan.getBytes(StandardCharsets.UTF_8));
+        try {
+            var pack = encryptionService.encrypt(pan.getBytes(StandardCharsets.UTF_8));
 
-        // Compute HMAC of full PAN and last 4 digits
-        String panHmac = hmacService.getHmacHex(pan);
-        String last4 = pan.substring(pan.length() - 4);
-        String last4Hmac = hmacService.getHmacHex(last4);
+            // Compute HMAC of full PAN and last 4 digits
+            String panHmac = hmacService.getHmacHex(pan);
+            String last4 = pan.substring(pan.length() - 4);
+            String last4Hmac = hmacService.getHmacHex(last4);
 
-        // Create card record andd Save to DB
-        Card c = new Card();
-        c.setCardholderName(name);
-        c.setIv(pack.iv());
-        c.setPanCiphertext(pack.ciphertext());
-        c.setPanHmac(panHmac);
-        c.setLast4Hmac(last4Hmac);
-        Card saved = repo.saveAndFlush(c);
-        return new Dtos.CardResponse(saved.getId(), name, PanUtils.maskPan(pan),
-                saved.getCreatedAt());
+            // Create card record andd Save to DB
+            Card c = new Card();
+            c.setCardholderName(name);
+            c.setIv(pack.iv());
+            c.setPanCiphertext(pack.ciphertext());
+            c.setPanHmac(panHmac);
+            c.setLast4Hmac(last4Hmac);
+            Card saved = repo.saveAndFlush(c);
+            return new Dtos.CardResponse(saved.getId(), name, PanUtils.maskPan(pan),
+                    saved.getCreatedAt());
+        } catch (GeneralSecurityException e) {
+            throw new EncryptionException("Encryption failed for PAN", e);
+        }
     }
 
     /**
@@ -70,8 +78,11 @@ public class CardServiceImpl implements CardService{
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Dtos.CardResponse> searchByPan(String rawPan) {
+    public List<Dtos.CardResponse> searchByPan(String rawPan) throws InvalidPanException {
         String pan = PanUtils.normalize(rawPan);
+        if (!PanUtils.isPanValid(pan)) throw new
+                InvalidPanException("INVALID PAN : " + rawPan );
+
         String idx = hmacService.getHmacHex(pan);
         return repo.findByPanHmac(idx).stream()
                 .map(c -> new Dtos.CardResponse(c.getId(), c.getCardholderName(),
@@ -86,10 +97,13 @@ public class CardServiceImpl implements CardService{
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Dtos.CardResponse> searchByLast4Digits(String rawLast4) {
+    public List<Dtos.CardResponse> searchByLast4Digits(String rawLast4) throws InvalidPanException{
 
         // Seearch by last 4 digits and return a list of masked PANs
         String last4 = PanUtils.normalize(rawLast4);
+        if (last4.length() != 4 || !last4.matches("\\d{4}"))
+            throw new InvalidPanException("Last4 must be exactly 4 digits: " + rawLast4);
+
         // Covert last4 to HMAC index
         String idx = hmacService.getHmacHex(last4);
 
