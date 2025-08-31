@@ -11,8 +11,6 @@ public class Dtos {
     // Request Object
     public record CardRequest(@NotBlank(message = "Cardholder name cannot be blank")
                               String cardholderName,
-
-                              @Pattern(regexp = "\\d{12,19}", message = "PAN must be 12–19 digits")
                               String pan) {
     }
 

@@ -49,6 +49,7 @@ public class CardServiceImpl implements CardService{
         // Compute HMAC of full PAN and last 4 digits
         String panHmac = hmacService.getHmacHex(pan);
         String last4 = pan.substring(pan.length() - 4);
+        String last4Hmac = hmacService.getHmacHex(last4);
 
         // Create card record andd Save to DB
         Card c = new Card();
@@ -56,8 +57,8 @@ public class CardServiceImpl implements CardService{
         c.setIv(pack.iv());
         c.setPanCiphertext(pack.ciphertext());
         c.setPanHmac(panHmac);
-        c.setLast4Hmac(last4);
-        Card saved = repo.save(c);
+        c.setLast4Hmac(last4Hmac);
+        Card saved = repo.saveAndFlush(c);
         return new Dtos.CardResponse(saved.getId(), name, PanUtils.maskPan(pan),
                 saved.getCreatedAt());
     }
@@ -80,15 +81,19 @@ public class CardServiceImpl implements CardService{
 
     /**
      * Searches for cards by last 4 digits of the PAN.
-     * @param last4 The last 4 digits to search for.
+     * @param rawLast4 The last 4 digits to search for.
      * @return A list of matching CardResponse DTOs.
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Dtos.CardResponse> searchByLast4Digits(String last4) {
+    public List<Dtos.CardResponse> searchByLast4Digits(String rawLast4) {
 
         // Seearch by last 4 digits and return a list of masked PANs
-        return repo.findByLast4Hmac(last4).stream()
+        String last4 = PanUtils.normalize(rawLast4);
+        // Covert last4 to HMAC index
+        String idx = hmacService.getHmacHex(last4);
+
+        return repo.findByLast4Hmac(idx).stream()
                 .map(c -> {
                     try {
                         var decrypted = encryptionService.decrypt(

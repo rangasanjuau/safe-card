@@ -36,9 +36,9 @@ public class CardController {
     @GetMapping("/search")
     public ResponseEntity<List<Dtos.CardResponse>> search(@RequestParam(required = false)
                                                           String pan, @RequestParam(required = false)
-                                                          String last4Digits) {
+                                                          String last4) {
         if (pan != null) return ResponseEntity.ok(cardService.searchByPan(pan));
-        if (last4Digits != null) return ResponseEntity.ok(cardService.searchByLast4Digits(last4Digits));
+        if (last4 != null) return ResponseEntity.ok(cardService.searchByLast4Digits(last4));
 
         return ResponseEntity.badRequest().build();
     }
