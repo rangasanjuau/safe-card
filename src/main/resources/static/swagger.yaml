@@ -8,7 +8,7 @@ info:
     - Full PAN is never returned or logged.
     - Search supports exact match and last 4 digits.
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:8080/api/V1
 
 paths:
   /cards:

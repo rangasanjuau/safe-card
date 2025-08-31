@@ -12,8 +12,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/cards")
-@CrossOrigin(origins = "*") // allow all origins for testing
+@RequestMapping("/api/V1/cards")
 public class CardController {
 
 

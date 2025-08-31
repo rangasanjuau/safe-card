@@ -1,6 +1,7 @@
 package com.neurocom.safe_card.controller;
 
 import com.neurocom.safe_card.dto.Dtos;
+import com.neurocom.safe_card.exception.InvalidRequestException;
 import com.neurocom.safe_card.service.CardService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class CardControllerTest {
@@ -88,13 +89,11 @@ class CardControllerTest {
     }
 
     @Test
-    void testSearch_WithNullPanNullLast4Digits_ReturnsBadRequest() {
-        // Act
-        ResponseEntity<List<Dtos.CardResponse>> result = cardController.search(null, null);
-
+    void testSearch_WithNullPanNullLast4Digits_ThrowsException() {
         // Assert
-        assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
-        assertNull(result.getBody());
+        assertThrows(InvalidRequestException.class, () -> {
+            cardController.search(null, null);
+        });
 
         verify(cardService, never()).searchByPan(any());
         verify(cardService, never()).searchByLast4Digits(any());
