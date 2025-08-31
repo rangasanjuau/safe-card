@@ -1,6 +1,8 @@
-package com.neurocom.safe_card.service;
+package com.neurocom.safe_card.util;
 
 import com.neurocom.safe_card.config.CryptoConfig;
+import com.neurocom.safe_card.utils.AesGcmServiceImpl;
+import com.neurocom.safe_card.utils.EncryptionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

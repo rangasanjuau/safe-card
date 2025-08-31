@@ -1,4 +1,4 @@
-package com.neurocom.safe_card.service;
+package com.neurocom.safe_card.utils;
 
 import com.neurocom.safe_card.config.CryptoConfig;
 import org.springframework.stereotype.Component;

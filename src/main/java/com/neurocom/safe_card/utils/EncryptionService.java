@@ -1,4 +1,4 @@
-package com.neurocom.safe_card.service;
+package com.neurocom.safe_card.utils;
 
 public interface EncryptionService {
 
