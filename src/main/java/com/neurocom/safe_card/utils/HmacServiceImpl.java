@@ -33,6 +33,7 @@ public class HmacServiceImpl implements HmacService {
      * @param normalizedPan The normalized PAN (e.g. digits only, no spaces).
      * @return The HMAC-SHA-256 as a hex string.
      */
+    @Override
     public String getHmacHex(String normalizedPan) {
         //
         byte[] out = mac.doFinal(normalizedPan.getBytes(StandardCharsets.UTF_8));
