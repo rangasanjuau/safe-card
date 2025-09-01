@@ -1,10 +1,13 @@
 package com.neurocom.safe_card.exception;
 
 import com.neurocom.safe_card.dto.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
 
@@ -15,6 +18,8 @@ import java.time.Instant;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Handles InvalidPanException and returns a structured error response.
      *
@@ -22,7 +27,7 @@ public class GlobalExceptionHandler {
      * @return ResponseEntity with error details and HTTP status 400
      */
     @ExceptionHandler(InvalidPanException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidPan(InvalidPanException ex) {
+    public ResponseEntity<ErrorResponse> handleInvalidPan(InvalidPanException ex, WebRequest request) {
         var error = new ErrorResponse(
                 "Invalid PAN",
                 ex.getMessage(),
