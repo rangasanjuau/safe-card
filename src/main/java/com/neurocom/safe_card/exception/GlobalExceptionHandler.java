@@ -33,7 +33,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now()
         );
-        log.error("InvalidPanException : ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -50,7 +49,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now()
         );
-        log.error("InvalidRequestException : ", ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
@@ -68,7 +66,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now()
         );
-        log.error("NotFoundException : ", ex);
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
@@ -85,7 +82,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now()
         );
-        log.error("EncryptionException : ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
@@ -103,7 +99,6 @@ public class GlobalExceptionHandler {
                 ex.getMessage(),
                 Instant.now()
         );
-        log.error("Exception : ", ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
