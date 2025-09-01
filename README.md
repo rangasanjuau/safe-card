@@ -65,9 +65,33 @@ http://localhost:8080/swagger-ui/index.html
 
 ---
 
-## ** Luhn Valid PAN examples**
+#### ** Luhn Valid PAN samples**
 ```bash
 4539 1488 0343 6467
 4556 7375 8689 9855
 6011 6011 6011 6611
+
+Alrready in DB (if test profile used): mvn spring-boot:run -Dspring-boot.run.profiles=test
+4539578763621486  
+4716108999716531
+5425233430109903
+6011000990139424
 ```
+
+## ** TECHNOLOGIA **
+- `Sonar` for code quality
+- `Jacoco` for code coverage ( > 80% )
+- `Swagger` for API documentation
+- `Swagger` for API testing
+- `Lombok` to reduce boilerplate code
+- `Spring Boot` for building the backend application
+- `H2` in-memory database for data persistence
+- `React` for building the frontend application
+- `Maven` for dependency management and build automation
+- `Git` for version control
+- `Junit` and `Mockito` for unit and integration testing
+- `AES GCM` for encryption
+- `BCrypt` for hashing
+- `Java 21` as the programming language
+- `Node.js` and `npm` for frontend development
+- `Visual Studio Code` and `IntelliJ IDEA` as the IDEs
