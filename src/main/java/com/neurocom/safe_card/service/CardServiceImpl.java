@@ -9,6 +9,8 @@ import com.neurocom.safe_card.repository.CardRepository;
 import com.neurocom.safe_card.utils.EncryptionService;
 import com.neurocom.safe_card.utils.HmacService;
 import com.neurocom.safe_card.utils.PanUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +27,8 @@ public class CardServiceImpl implements CardService {
     private final CardRepository repo;
     private final EncryptionService encryptionService;
     private final HmacService hmacService;
+
+    private static final Logger log = LoggerFactory.getLogger(CardServiceImpl.class);
 
     public CardServiceImpl(CardRepository repo, EncryptionService aes, HmacService
             hmac) {
@@ -81,8 +85,12 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     public List<Dtos.CardResponse> searchByPan(String rawPan) {
         String pan = PanUtils.normalize(rawPan);
+
+        String maskedPan = PanUtils.maskPan(pan);
+        log.info("Searching for pan: {} ", maskedPan );
+
         if (!PanUtils.isPanValid(pan)) throw new
-                InvalidPanException("INVALID PAN : " + rawPan);
+                InvalidPanException("INVALID PAN : " + maskedPan);
 
         String idx = hmacService.getHmacHex(pan);
         List<Dtos.CardResponse> response = repo.findByPanHmac(idx).stream()
@@ -93,6 +101,7 @@ public class CardServiceImpl implements CardService {
         if (response.isEmpty()) {
             throw new NotFoundException("No cards found for PAN: " + PanUtils.maskPan(pan));
         }
+        log.info("Found {} cards for PAN: {}", response.size(), maskedPan);
         return response;
     }
 
@@ -108,13 +117,17 @@ public class CardServiceImpl implements CardService {
 
         // Seearch by last 4 digits and return a list of masked PANs
         String last4 = PanUtils.normalize(rawLast4);
+
+        String maskedPan = PanUtils.maskPan(last4);
+        log.info("Searching for pan ending with : {} ", maskedPan);
+
         if (last4.length() != 4 || !last4.matches("\\d{4}"))
             throw new InvalidPanException("Last4 must be exactly 4 digits: " + rawLast4);
 
         // Covert last4 to HMAC index
         String idx = hmacService.getHmacHex(last4);
 
-        return repo.findByLast4Hmac(idx).stream()
+        List<Dtos.CardResponse> response = repo.findByLast4Hmac(idx).stream()
                 .map(c -> {
 
                     var decrypted = encryptionService.decrypt(
@@ -125,6 +138,8 @@ public class CardServiceImpl implements CardService {
 
                 })
                 .toList();
+        log.info("Found {} cards for PAN ending with : {}", response.size(), maskedPan);
+        return response;
 
     }
 }
