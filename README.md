@@ -63,9 +63,7 @@ http://localhost:8080/swagger-ui/index.html
    - **Search Card by Last 4 Digits**: Use the `GET /api/cards/search?last4={last4}` endpoint to search for cards by their last 4 digits.
 
 
----
-
-#### ** Luhn Valid PAN samples**
+#### **Luhn Valid PAN samples**
 ```bash
 4539 1488 0343 6467
 4556 7375 8689 9855
@@ -78,7 +76,11 @@ Alrready in DB (if test profile used): mvn spring-boot:run -Dspring-boot.run.pro
 6011000990139424
 ```
 
-## ** TECHNOLOGIA **
+## **Communication**
+- **Https** for secure communication between frontend and backend.
+
+
+## **TECHNOLOGIA**
 - `Sonar` for code quality
 - `Jacoco` for code coverage ( > 80% )
 - `Swagger` for API documentation
